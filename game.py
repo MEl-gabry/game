@@ -12,6 +12,8 @@ class Game():
         self.actions = {"left": False, "right": False, "up" : False, "down" : False, "action1" : False, "action2" : False, "start" : False}
         self.dt, self.prev_time = 0, 0
         self.state_stack = []
+        self.distance = 0
+        self.money = 0
         self.load_assets()
         self.load_states()
 
@@ -29,9 +31,9 @@ class Game():
                         self.actions['left'] = True
                     if event.key == pygame.K_d:
                         self.actions['right'] = True
-                    if event.key == pygame.K_w:
+                    if event.key == pygame.K_UP:
                         self.actions['up'] = True
-                    if event.key == pygame.K_s:
+                    if event.key == pygame.K_DOWN:
                         self.actions['down'] = True
                     if event.key == pygame.K_p:
                         self.actions['action1'] = True

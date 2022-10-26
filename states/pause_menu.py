@@ -1,6 +1,5 @@
 import pygame, os
 from .state import State
-from .party import PartyMenu
 
 class PauseMenu(State):
     def __init__(self, game):
@@ -41,8 +40,7 @@ class PauseMenu(State):
 
     def transition_state(self):
         if self.menu_options[self.index] == "Party": 
-            new_state = PartyMenu(self.game)
-            new_state.enter_state()
+            pass
         elif self.menu_options[self.index] == "Items": 
             pass # TO-DO
         elif self.menu_options[self.index] == "Magic": 
