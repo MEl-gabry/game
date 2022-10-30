@@ -14,6 +14,9 @@ class TextEvent(State):
         self.start_y = 7 * self.game.GAME_H/8
         self.cursor.x, self.cursor.y = self.fcol_x - 50, self.start_y - 3
         self.increment = self.game.GAME_H/16
+        self.speed = 5
+        self.done = False
+        self.counter = 0
         State.__init__(self, game)
 
     def update(self, delta_time, actions):
@@ -24,27 +27,40 @@ class TextEvent(State):
 
     def render(self, display):
         self.prev_state.render(display)
-        self.game.draw_text(display, self.event["text"], (255,255,255), 7, self.game.GAME_W/2, 3 * self.game.GAME_H/4 + 15)
-        y = self.start_y
-        
-        for i in range(len(self.event["options"])//2):
-            self.game.draw_text(display, self.event["options"][i], (255,255,255), 7, self.fcol_x, y)
-            y += self.increment
-        
-        self.scol_x = 3 * self.game.GAME_W/4
-        y = self.start_y
+        slice = 0
+        if not self.done:
+            if self.counter < self.speed * len(self.event["text"]):
+                self.counter += 1
+                slice = self.counter//self.speed
+            else:
+                self.done = True
+        else:
+            slice = len(self.event["text"])
+        self.game.draw_text(display, self.event["text"][0:slice], (255,255,255), 7, self.game.GAME_W/2, 3 * self.game.GAME_H/4 + 15)
+        if self.done:
+            y = self.start_y
+            
+            for i in range(len(self.event["options"])//2):
+                self.game.draw_text(display, self.event["options"][i], (255,255,255), 7, self.fcol_x, y)
+                y += self.increment
+            
+            self.scol_x = 3 * self.game.GAME_W/4
+            y = self.start_y
 
-        for i in range(len(self.event["options"])//2, len(self.event["options"])):
-            self.game.draw_text(display, self.event["options"][i], (255,255,255), 7, self.scol_x, y)
-            y += self.increment
+            for i in range(len(self.event["options"])//2, len(self.event["options"])):
+                self.game.draw_text(display, self.event["options"][i], (255,255,255), 7, self.scol_x, y)
+                y += self.increment
 
-        display.blit(self.cursor_img, self.cursor)
+            display.blit(self.cursor_img, self.cursor)
 
     def update_cursor(self, actions):
         if actions["down"]:
             self.pos = (self.pos + 1) % len(self.event["options"])
         elif actions["up"]:
             self.pos = (self.pos - 1) % len(self.event["options"])
+        
+        if actions["start"] and not self.done:
+            self.done = True
         
         y_offset = 0
 

@@ -14,6 +14,8 @@ class Game():
         self.state_stack = []
         self.distance = 0
         self.money = 0
+        self.fps = 60
+        self.clock = pygame.time.Clock()
         self.load_assets()
         self.load_states()
 
@@ -60,6 +62,7 @@ class Game():
 
     def game_loop(self):
         while self.playing:
+            self.clock.tick(self.fps)
             self.get_dt()
             self.get_events()
             self.update()
