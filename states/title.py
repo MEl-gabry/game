@@ -5,7 +5,7 @@ class Title(State):
     def __init__(self, game):
         State.__init__(self, game)
     
-    def update(self, delta_time, actions):
+    def update(self, actions):
         if actions["start"]:
             new_state = Game_World(self.game)
             new_state.enter_state()
@@ -13,4 +13,4 @@ class Title(State):
 
     def render(self, display):
         display.fill((255, 255, 255))
-        self.game.draw_text(display, "Game", (0,0,0), 20, self.game.GAME_W/2, self.game.GAME_H/2)
+        self.game.draw_text(display, "Route to Home", (0,0,0), 20, self.game.GAME_W/2, self.game.GAME_H/2)
