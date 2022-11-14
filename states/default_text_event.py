@@ -25,6 +25,11 @@ class DefaultTextEvent(State):
 
     def render(self, display):
         self.prev_state.render(display)
+        try:
+            display.blit(self.event["image"], self.event["coords"])
+        except KeyError:
+            pass
+
         self.type_writer(display, self.event["text"])
         if self.done:
             y = self.start_y

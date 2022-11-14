@@ -1,10 +1,11 @@
 import os, pygame
 from states.title import Title
+from states.consts import GAME_W, GAME_H
 
 class Game():
     def __init__(self):
         pygame.init()
-        self.GAME_W, self.GAME_H = 480, 270
+        self.GAME_W, self.GAME_H = GAME_W, GAME_H
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 960, 540
         self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))

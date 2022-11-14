@@ -1,11 +1,15 @@
 from .state import State
 from random import randint
+import pygame
+from .consts import GAME_W, GAME_H
+import os
 
 class ComplexEvent(State):
     def __init__(self, game):
         State.__init__(self, game)
         self.text = ""
         self.event_switch = 0
+        self.image = 0
 
     def update(self, actions):
         if actions["start"] and not self.done:
@@ -17,6 +21,8 @@ class ComplexEvent(State):
 
     def render(self, display):
         self.prev_state.render(display)
+        if self.image:
+            display.blit(self.image, (3 * self.game.GAME_W, self.game.GAME_H/2))
         self.type_writer(display, self.text)
 
     def switch_event(self):
@@ -125,6 +131,7 @@ class Pirates(ComplexEvent):
     def __init__(self, game):
         ComplexEvent.__init__(self, game)
         self.outcome = randint(0, 1)
+        self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "pirateship.png")), (GAME_W/4, GAME_H/4)), 180)
         if self.outcome == 1:
             ext_txt = "!"
             money_stole = 0
@@ -158,24 +165,37 @@ class Negotiate(Pirates):
         if self.outcome == 0:
             self.text = f"The pirates decided to let you go."
 
-    
-class Accept(ComplexEvent):
+
+class FShip(ComplexEvent):
     def __init__(self, game):
         ComplexEvent.__init__(self, game)
+        self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "spaceship.png")), (GAME_W/4, GAME_H/4)), 180)
+
+
+class Accept(FShip):
+    def __init__(self, game):
+        FShip.__init__(self, game)
         fuel_gained = randint(1, 100)
         self.game.fuel += fuel_gained
         self.text = f"The ship has given you {fuel_gained} fuel!"
+        self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "spaceship.png")), (GAME_W/4, GAME_H/4)), 180)
 
 
-class Deny(ComplexEvent):
+class Deny(FShip):
     def __init__(self, game):
-        ComplexEvent.__init__(self, game)
+        FShip.__init__(self, game)
         self.text = "The ship has left."
+        self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "spaceship.png")), (GAME_W/4, GAME_H/4)), 180)
 
 
-class BuySupplies(Switcher):
+class Station(Switcher):
     def __init__(self, game):
         Switcher.__init__(self, game)
+        self.image = pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "station.png")), (GAME_W/3, GAME_H/3))
+
+class BuySupplies(Station):
+    def __init__(self, game):
+        Station.__init__(self, game)
         self.event_switch = 4
         if self.game.money >= 50:
             self.text = "You have bought supplies."
@@ -185,9 +205,9 @@ class BuySupplies(Switcher):
             self.text = "You don't have enough money."
 
 
-class BuyFuel(Switcher):
+class BuyFuel(Station):
     def __init__(self, game):
-        Switcher.__init__(self, game)
+        Station.__init__(self, game)
         self.event_switch = 4
         if self.game.money >= 50:
             self.text = "You have bought fuel."
@@ -197,9 +217,9 @@ class BuyFuel(Switcher):
             self.text = "You don't have enough money."
 
 
-class SellArt(Switcher):
+class SellArt(Station):
      def __init__(self, game):
-        Switcher.__init__(self, game)
+        Station.__init__(self, game)
         self.event_switch = 4
         
         if len(self.game.artifacts) == 0:
@@ -284,11 +304,16 @@ class LeaveArt(ComplexEvent):
         self.prev_state.events_created = 0
         self.exit_state()
 
+class LeavePlanet(LeaveArt):
+    def __init__(self, game):
+        ComplexEvent.__init__(self, game)
+        self.image = pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "planet.png")), (GAME_W/2, GAME_H/2))
 
 class Supplies(ComplexEvent):
     def __init__(self, game):
         ComplexEvent.__init__(self, game)
         event = randint(0, 1)
+        self.image = pygame.transform.scale(pygame.image.load(os.path.join("assets", "sprites", "planet.png")), (GAME_W/2, GAME_H/2))
         if event == 0:
             self.text = "You did not find any supplies"
             self.game.supplies += 1
